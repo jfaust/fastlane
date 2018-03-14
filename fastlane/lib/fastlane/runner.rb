@@ -224,8 +224,9 @@ module Fastlane
       verify_supported_os(method_sym, class_ref)
 
       begin
-        launch_context = FastlaneCore::ActionLaunchContext.context_for_action_name(method_sym.to_s, configuration_language: configuration_language, args: ARGV)
-        FastlaneCore.session.action_launched(launch_context: launch_context)
+        # https://github.com/fastlane/fastlane/issues/11913
+        # launch_context = FastlaneCore::ActionLaunchContext.context_for_action_name(method_sym.to_s, configuration_language: configuration_language, args: ARGV)
+        # FastlaneCore.session.action_launched(launch_context: launch_context)
 
         Dir.chdir(custom_dir) do # go up from the fastlane folder, to the project folder
           # If another action is calling this action, we shouldn't show it in the summary
@@ -265,24 +266,22 @@ module Fastlane
       rescue FastlaneCore::Interface::FastlaneCommonException => e # these are exceptions that we dont count as crashes
         raise e
       rescue FastlaneCore::Interface::FastlaneError => e # user_error!
-        FastlaneCore::CrashReporter.report_crash(exception: e)
         action_completed(method_sym.to_s, status: FastlaneCore::ActionCompletionStatus::USER_ERROR, exception: e)
         raise e
       rescue Exception => e # rubocop:disable Lint/RescueException
         # high chance this is actually FastlaneCore::Interface::FastlaneCrash, but can be anything else
         # Catches all exceptions, since some plugins might use system exits to get out
-        FastlaneCore::CrashReporter.report_crash(exception: e)
-
         action_completed(method_sym.to_s, status: FastlaneCore::ActionCompletionStatus::FAILED, exception: e)
         raise e
       end
     end
 
     def action_completed(action_name, status: nil, exception: nil)
-      if exception.nil? || exception.fastlane_should_report_metrics?
-        action_completion_context = FastlaneCore::ActionCompletionContext.context_for_action_name(action_name, args: ARGV, status: status)
-        FastlaneCore.session.action_completed(completion_context: action_completion_context)
-      end
+      #  https://github.com/fastlane/fastlane/issues/11913
+      # if exception.nil? || exception.fastlane_should_report_metrics?
+      #   action_completion_context = FastlaneCore::ActionCompletionContext.context_for_action_name(action_name, args: ARGV, status: status)
+      #   FastlaneCore.session.action_completed(completion_context: action_completion_context)
+      # end
     end
 
     def execute_flow_block(block, current_platform, lane, parameters)

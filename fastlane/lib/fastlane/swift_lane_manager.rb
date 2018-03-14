@@ -15,10 +15,10 @@ module Fastlane
       # https://github.com/CocoaPods/Xcodeproj/issues/426
       # Setting this environment variable causes xcodeproj to work around the problem
       ENV["FORK_XCODE_WRITING"] = "true"
+      # https://github.com/fastlane/fastlane/issues/11913
+      # FastlaneCore.session.is_fastfile = true
 
-      FastlaneCore.session.is_fastfile = true
-
-      load_dot_env(env)
+      Fastlane::Helper::DotenvHelper.load_dot_env(env)
 
       started = Time.now
       e = nil

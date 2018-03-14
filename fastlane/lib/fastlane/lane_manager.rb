@@ -40,7 +40,8 @@ module Fastlane
 
       platform, lane = choose_lane(ff, platform) unless lane
 
-      FastlaneCore.session.is_fastfile = true
+      # https://github.com/fastlane/fastlane/issues/11913
+      # FastlaneCore.session.is_fastfile = true
 
       # xcodeproj has a bug in certain versions that causes it to change directories
       # and not return to the original working directory
@@ -48,7 +49,7 @@ module Fastlane
       # Setting this environment variable causes xcodeproj to work around the problem
       ENV["FORK_XCODE_WRITING"] = "true" unless platform == 'android'
 
-      load_dot_env(env)
+      Fastlane::Helper::DotenvHelper.load_dot_env(env)
 
       started = Time.now
       e = nil

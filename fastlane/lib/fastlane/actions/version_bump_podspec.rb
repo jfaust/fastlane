@@ -49,6 +49,7 @@ module Fastlane
                                        description: "You must specify the path to the podspec file to update",
                                        code_gen_sensitive: true,
                                        default_value: Dir["*.podspec"].last,
+                                       default_value_dynamic: true,
                                        verify_block: proc do |value|
                                          UI.user_error!("Please pass a path to the `version_bump_podspec` action") if value.length == 0
                                        end),
@@ -70,6 +71,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :require_variable_prefix,
                                        env_name: "FL_VERSION_BUMP_PODSPEC_VERSION_REQUIRE_VARIABLE_PREFIX",
                                        description: "true by default, this is used for non CocoaPods version bumps only",
+                                       type: Boolean,
                                        default_value: true)
         ]
       end

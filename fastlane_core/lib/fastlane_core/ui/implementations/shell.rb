@@ -26,8 +26,6 @@ module FastlaneCore
         "#{format_string(datetime, severity)}#{msg}\n"
       end
 
-      require 'fastlane_core/ui/disable_colors' if FastlaneCore::Helper.colors_disabled?
-
       @log
     end
 
@@ -72,8 +70,12 @@ module FastlaneCore
     def command_output(message)
       actual = (message.split("\r").last || "") # as clearing the line will remove the `>` and the time stamp
       actual.split("\n").each do |msg|
-        prefix = msg.include?("▸") ? "" : "▸ "
-        log.info(prefix + "" + msg.magenta)
+        if FastlaneCore::Env.truthy?("FASTLANE_DISABLE_OUTPUT_FORMAT")
+          log.info(msg)
+        else
+          prefix = msg.include?("▸") ? "" : "▸ "
+          log.info(prefix + "" + msg.magenta)
+        end
       end
     end
 
