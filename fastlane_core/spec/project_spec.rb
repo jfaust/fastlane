@@ -305,6 +305,24 @@ describe FastlaneCore do
       end
     end
 
+    describe "Valid Workspace with workspace contained schemes" do
+      before do
+        options = {
+          workspace: "./fastlane_core/spec/fixtures/projects/workspace_schemes/WorkspaceSchemes.xcworkspace",
+          scheme: "WorkspaceSchemesScheme"
+        }
+        @workspace = FastlaneCore::Project.new(options, xcodebuild_list_silent: true, xcodebuild_suppress_stderr: true)
+      end
+
+      it "#schemes returns all schemes" do
+        expect(@workspace.schemes).to eq(["WorkspaceSchemesFramework", "WorkspaceSchemesApp", "WorkspaceSchemesScheme"])
+      end
+
+      it "#schemes returns all configurations" do
+        expect(@workspace.configurations).to eq([])
+      end
+    end
+
     describe "build_settings() can handle empty lines" do
       it "SUPPORTED_PLATFORMS should be iphonesimulator iphoneos on Xcode >= 8.3" do
         options = { project: "./fastlane_core/spec/fixtures/projects/Example.xcodeproj" }
@@ -459,6 +477,23 @@ describe FastlaneCore do
           xcodebuild_suppress_stderr: true
         )
         expect(project.build_xcodebuild_showbuildsettings_command).to match(%r{2> /dev/null})
+      end
+    end
+
+    describe 'xcodebuild_xcconfig option', requires_xcode: true do
+      it 'generates an xcodebuild -showBuildSettings command without xcconfig by default' do
+        project = FastlaneCore::Project.new({ project: "./fastlane_core/spec/fixtures/projects/Example.xcodeproj" })
+        command = "xcodebuild -showBuildSettings -project ./fastlane_core/spec/fixtures/projects/Example.xcodeproj"
+        expect(project.build_xcodebuild_showbuildsettings_command).to eq(command)
+      end
+
+      it 'generates an xcodebuild -showBuildSettings command that includes xcconfig if provided in options', requires_xcode: true do
+        project = FastlaneCore::Project.new({
+          project: "./fastlane_core/spec/fixtures/projects/Example.xcodeproj",
+          xcconfig: "/path/to/some.xcconfig"
+        })
+        command = "xcodebuild -showBuildSettings -project ./fastlane_core/spec/fixtures/projects/Example.xcodeproj -xcconfig /path/to/some.xcconfig"
+        expect(project.build_xcodebuild_showbuildsettings_command).to eq(command)
       end
     end
 
